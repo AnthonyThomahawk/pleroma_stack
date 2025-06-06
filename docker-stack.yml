@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  pleroma:
+    image: elestio/pleroma:${SOFTWARE_VERSION_TAG}
+    deploy:
+      restart_policy:
+        condition: any
+      placement:
+        constraints: 
+          - node.role == worker
+    hostname: "pleroma"
+    labels:
+      - "org.label-schema.group=pleroma"
+    env_file: .env
+    depends_on:
+      - pleroma-db
+    ports:
+      - target: 4000
+        published: ${FRONTEND_PORT}
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - pleroma_uploads:/data/uploads
+      - pleroma_static:/data/static
+    configs:
+      - source: pleroma_config
+        target: /prod.secret.exs
+      - source: init_script
+        target: /init-pleroma.sh
+    entrypoint: ["sh", "/init-pleroma.sh"]
+
+  pleroma-db:
+    image: elestio/postgres:15
+    deploy:
+      restart_policy:
+        condition: any
+      placement:
+        constraints: 
+          - node.role == worker
+          - node.labels.pleroma_nd == true
+    hostname: "pleroma-db"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=False"
+      - "org.label-schema.group=pleroma"
+    env_file: .env
+    ports:
+      - target: ${DB_PORT}
+        published: ${DB_PORT}
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - pleroma_db_data:/var/lib/postgresql/data
+    command: ["postgres", "-p", "${DB_PORT}"]
+
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    deploy:
+      restart_policy:
+        condition: any
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASSWORD}
+      PGADMIN_LISTEN_PORT: 8080
+    ports:
+      - "${ADMIN_PORT}:8080"
+    volumes:
+      - pgadmin_servers:/pgadmin4/servers.json
+
+volumes:
+  pleroma_uploads:
+  pleroma_static:
+  pleroma_db_data:
+  pgadmin_servers:
+
+configs:
+  init_script:
+    external: true
+  pleroma_config:
+    external: true
