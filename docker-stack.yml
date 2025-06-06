@@ -4,6 +4,8 @@ services:
   pleroma:
     image: elestio/pleroma:${SOFTWARE_VERSION_TAG}
     deploy:
+      mode: replicated
+      replicas: 2
       restart_policy:
         condition: any
       placement:
