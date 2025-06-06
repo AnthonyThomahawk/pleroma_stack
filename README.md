@@ -1,7 +1,8 @@
 # Pleroma-Swarm
 ## Project goal
 The goal of this project was to make a Pleroma instance, running on a docker swarm cluster for scalability, portability and high availability.
-This is not meant for a production deployment, its just a demo of pleroma running on swarm.
+> [!CAUTION]
+> This is not meant for a production deployment, its just a demo of pleroma running on swarm.
 ## Current limitations
 The application runs without HTTPS, therefore it is not very secure. This was done for easy exposure of the web interface via docker swarm.
 ## Tools and images used
