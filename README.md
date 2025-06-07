@@ -45,18 +45,15 @@ STACK_NAME="your-cool-stackname" # stack name
 ```
 DB_NODE_NAME="hostname-of-your-worker" # hostname of node where the DB will run on
 ```
+> [!CAUTION]
+> If you do not have set a correct hostname for DB_NODE_NAME, the database server will not start, and the app deployment will **fail**.
 ### Changing IP, hostname and ports for web interface
 - Inside ".env" you must change :
 ```
-DOMAIN=192.168.1.29:3226
+DOMAIN=192.168.1.29
 FRONTEND_PORT=3226
 ```
 To the domain you want to use and the port. If you dont use a domain (like I did), you must still specify the IP and Port likewise.
-- Inside "prod.server.exs" you must change :
-```
-url: [host: System.get_env("DOMAIN", "192.168.1.29"), scheme: "http", port: 3226]
-```
-To your desired IP and port.
 ### Changing port for Database
 - In .env change :
 ```

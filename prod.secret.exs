@@ -1,7 +1,13 @@
 import Config
 
+frontend_port =
+  case System.get_env("FRONTEND_PORT") do
+    nil -> 3226
+    val -> String.to_integer(val)
+  end
+
 config :pleroma, Pleroma.Web.Endpoint,
-  url: [host: System.get_env("DOMAIN", "192.168.1.29"), scheme: "http", port: 3226],
+  url: [host: System.get_env("DOMAIN", "192.168.1.29"), scheme: "http", port: frontend_port],
   http: [ip: {0, 0, 0, 0}, port: 4000],
   session: [secure: false]
 
@@ -19,7 +25,7 @@ config :pleroma, :media_proxy,
   redirect_on_failure: true,
   base_url: "https://cache.domain.tld"
 
-port =
+db_port =
   case System.get_env("DB_PORT") do
     nil -> 5432
     val -> String.to_integer(val)
@@ -31,7 +37,7 @@ config :pleroma, Pleroma.Repo,
   password: System.fetch_env!("DB_PASS"),
   database: System.get_env("DB_NAME", "pleroma"),
   hostname: System.get_env("DB_HOST", "pleroma-db"),
-  port: port,
+  port: db_port,
   pool_size: 10
 
 # Configure web push notifications
