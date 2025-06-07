@@ -19,12 +19,19 @@ config :pleroma, :media_proxy,
   redirect_on_failure: true,
   base_url: "https://cache.domain.tld"
 
+port =
+  case System.get_env("DB_PORT") do
+    nil -> 5432
+    val -> String.to_integer(val)
+  end
+
 config :pleroma, Pleroma.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: System.get_env("DB_USER", "pleroma"),
   password: System.fetch_env!("DB_PASS"),
   database: System.get_env("DB_NAME", "pleroma"),
-  hostname: System.get_env("DB_HOST", "db"),
+  hostname: System.get_env("DB_HOST", "pleroma-db"),
+  port: port,
   pool_size: 10
 
 # Configure web push notifications

@@ -58,12 +58,11 @@ url: [host: System.get_env("DOMAIN", "192.168.1.29"), scheme: "http", port: 3226
 ```
 To your desired IP and port.
 ### Changing port for Database
-This is not recommended and can break the application, however if you MUST do it, inside ".env" you have to change:
+- In .env change :
 ```
-DB_PORT=5432
+DB_PORT=21732
 ```
-> [!CAUTION]
-> Keep in mind this is not tested and may break things.
+to your desired port.
 ### Changing database user and password
 inside .env change the following values to your liking : 
 ```

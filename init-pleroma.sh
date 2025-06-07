@@ -27,19 +27,23 @@ if [ "$(stat -c %U:%G /data)" != "pleroma:pleroma" ]; then
     chown -R pleroma:pleroma /data
 fi
 
-echo "-- Waiting for database..."
-while ! pg_isready -U ${DB_USER:-pleroma} -d postgres://${DB_HOST:-db}:${DB_PORT:-5432}/${DB_NAME:-pleroma} -t 1; do
+if [ -z "$DB_PORT" ]; then
+  echo "ERROR: DB_PORT is not set! Exiting."
+  exit 1
+fi
+
+while ! pg_isready -U "${DB_USER:-pleroma}" -d "postgres://${DB_HOST:-pleroma-db}:${DB_PORT}/${DB_NAME:-pleroma}" -t 1; do
     sleep 1s
 done
-
-echo "-- Running migrations..."
-su-exec pleroma mix ecto.migrate
 
 echo "-- Injecting prod.secret.exs config..."
 mkdir -p /app/config
 cp /prod.secret.exs /app/config/prod.secret.exs
 chown pleroma:pleroma /app/config
 chown pleroma:pleroma /app/config/prod.secret.exs
+
+echo "-- Running migrations..."
+su-exec pleroma mix ecto.migrate
 
 echo "-- Starting server..."
 su-exec pleroma mix phx.server
